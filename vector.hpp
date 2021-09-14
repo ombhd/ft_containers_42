@@ -192,7 +192,7 @@ namespace ft
 	class vectorReverseIterator : public vectorIterator<T>
 	{
 	public:
-		// types aliases for AIterator typenames
+		// types aliases for vectorIterator typenames
 		typedef vectorReverseIterator<T> &reference;
 		typedef vectorReverseIterator<T> const &const_reference;
 		typedef typename vectorIterator<T>::reference type_reference;
