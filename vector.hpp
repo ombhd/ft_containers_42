@@ -6,7 +6,7 @@
 /*   By: obouykou <obouykou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/07 15:52:04 by obouykou          #+#    #+#             */
-/*   Updated: 2021/09/07 18:17:10 by obouykou         ###   ########.fr       */
+/*   Updated: 2021/10/02 13:30:16 by obouykou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,281 +17,46 @@
 #include <limits>
 #include <algorithm>
 #include <stdexcept>
+#include <vector>
 #include <iostream>
+
+#include "utils.hpp"
+
+std::vector<int> vec(4, 100);
 
 namespace ft
 {
-
-	template <typename T>
-	class vectorIterator
-	{
-	public:
-		//typenames aliases
-		typedef T value_type;
-		typedef value_type *pointer;
-		typedef value_type const *const_pointer;
-		typedef value_type &reference;
-		typedef value_type const &const_reference;
-		typedef size_t size_type;
-
-		// default constructor
-		vectorIterator() : ptr(NULL) {}
-
-		// constructor with parameter
-		vectorIterator(pointer p) : ptr(p) {}
-
-		// copy constructor
-		vectorIterator(vectorIterator const &rhs) : ptr(rhs.ptr) {}
-
-		// destructor
-		virtual ~vectorIterator() {}
-
-		/**
-		* operators overloadings
-		**/
-
-		vectorIterator &operator=(vectorIterator const &rhs)
-		{
-			this->ptr = rhs.ptr;
-			return (*this);
-		}
-
-		reference operator*()
-		{
-			return (*this->ptr);
-		}
-
-		const_reference operator*() const
-		{
-			return (*this->ptr);
-		}
-
-		pointer operator->()
-		{
-			return (this->ptr);
-		}
-
-		const_pointer operator->() const
-		{
-			return (this->ptr);
-		}
-
-		size_type asIndex(pointer p) const
-		{
-			ptrdiff_t diff = this->ptr - p;
-			if (diff < 0L)
-				throw std::invalid_argument("vector iterator: invalid iterator for the current vector");
-			return (diff);
-		}
-
-		reference operator[](int val)
-		{
-			return (*(this->ptr + val));
-		}
-
-		const_reference operator[](int val) const
-		{
-			return (*(this->ptr + val));
-		}
-
-		vectorIterator operator++(int)
-		{
-			vectorIterator tmp(*this);
-			++this->ptr;
-			return (tmp);
-		}
-
-		vectorIterator &operator++()
-		{
-			++this->ptr;
-			return (*this);
-		}
-
-		vectorIterator operator--(int)
-		{
-			vectorIterator tmp(*this);
-			--this->ptr;
-			return (tmp);
-		}
-
-		vectorIterator &operator--()
-		{
-			--this->ptr;
-			return (*this);
-		}
-
-		vectorIterator &operator+=(int value)
-		{
-			this->ptr += value;
-			return (*this);
-		}
-
-		vectorIterator operator+(int value) const
-		{
-			vectorIterator tmp(*this);
-			return (tmp += value);
-		}
-
-		vectorIterator &operator-=(int value)
-		{
-			this->ptr -= value;
-			return (*this);
-		}
-
-		vectorIterator operator-(int value) const
-		{
-			vectorIterator tmp(*this);
-			return (tmp -= value);
-		}
-
-		ptrdiff_t operator-(vectorIterator const &rhs) const
-		{
-			return (this->ptr - rhs.ptr);
-		}
-
-		ptrdiff_t operator+(vectorIterator const &rhs) const
-		{
-			return (this->ptr + rhs.ptr);
-		}
-
-		bool operator==(vectorIterator const &rhs) const
-		{
-			return (this->ptr == rhs.ptr);
-		}
-
-		bool operator!=(vectorIterator const &rhs) const
-		{
-			return (this->ptr != rhs.ptr);
-		}
-
-		bool operator<(vectorIterator const &rhs) const
-		{
-			return (this->ptr < rhs.ptr);
-		}
-
-		bool operator<=(vectorIterator const &rhs) const
-		{
-			return (this->ptr <= rhs.ptr);
-		}
-
-		bool operator>(vectorIterator const &rhs) const
-		{
-			return (this->ptr > rhs.ptr);
-		}
-
-		bool operator>=(vectorIterator const &rhs) const
-		{
-			return (this->ptr >= rhs.ptr);
-		}
-
-	protected:
-		pointer ptr;
-	};
-
-	template <class T>
-	class vectorReverseIterator : public vectorIterator<T>
-	{
-	public:
-		// types aliases for vectorIterator typenames
-		typedef vectorReverseIterator<T> &reference;
-		typedef vectorReverseIterator<T> const &const_reference;
-		typedef typename vectorIterator<T>::reference type_reference;
-		typedef typename vectorIterator<T>::pointer pointer;
-		typedef typename vectorIterator<T>::const_pointer const_pointer;
-
-		// default constructor
-		vectorReverseIterator() : vectorIterator<T>() {}
-
-		// default constructor
-		vectorReverseIterator(pointer inPtr) : vectorIterator<T>(inPtr) {}
-
-		// copy constructor
-		vectorReverseIterator(vectorReverseIterator const &src) : vectorIterator<T>(src) {}
-
-		// destructor
-		virtual ~vectorReverseIterator() {}
-
-		type_reference operator*()
-		{
-			vectorIterator<T> tmp = *this;
-			return (*--tmp);
-		}
-
-		type_reference operator*() const
-		{
-			vectorIterator<T> tmp = *this;
-			return (*--tmp);
-		}
-
-		pointer operator->()
-		{
-			vectorIterator<T> tmp = *this;
-			--tmp;
-			return (tmp.asPointer());
-		}
-
-		const_pointer operator->() const
-		{
-			vectorIterator<T> tmp = *this;
-			--tmp;
-			return (tmp.asPointer());
-		}
-
-		// pre ++ operator overloading
-		reference operator++()
-		{
-			vectorIterator<T>::operator--();
-			return (*this);
-		}
-
-		// post ++ operator overloading
-		vectorReverseIterator operator++(int)
-		{
-			vectorReverseIterator iter = *this;
-			vectorIterator<T>::operator--();
-			return (iter);
-		}
-
-		// pre -- operator overloading
-		reference operator--()
-		{
-			vectorIterator<T>::operator++();
-			return (*this);
-		}
-
-		// post -- operator overloading
-		vectorReverseIterator operator--(int)
-		{
-			vectorReverseIterator iter = *this;
-			vectorIterator<T>::operator++();
-			return (iter);
-		}
-	};
 	template <typename T, class Alloc = std::allocator<T> >
 	class vector
 	{
 
 	public:
 		typedef T value_type;
-		typedef T *pointer;
-		typedef T const *const_pointer;
-		typedef T &reference;
-		typedef T const &const_reference;
+		typedef Alloc allocator_type;
+		typedef typename allocator_type::reference reference;
+		typedef typename allocator_type::const_reference const_reference;
+		typedef typename allocator_type::pointer pointer;
+		typedef typename allocator_type::const_pointer const_pointer;
 		typedef size_t size_type;
-		typedef vectorIterator<value_type> iterator;
-		typedef vectorIterator<value_type> const const_iterator;
-		typedef vectorReverseIterator<value_type> reverse_iterator;
-		typedef vectorReverseIterator<value_type> const const_reverse_iterator;
+		typedef ptrdiff_t difference_type;
+		typedef vector_iterator<pointer> iterator;
+		typedef vector_iterator<const_pointer> const_iterator;
+		typedef reverse_iterator<const_iterator> const_reverse_iterator;
+		typedef reverse_iterator<iterator> reverse_iterator;
 
 		// constructors
 
-		vector() : _alloc(std::allocator<value_type>()), _arr(this->_alloc.allocate(1)), _capacity(1), _size(0)
+		vector(const allocator_type &alloc = allocator_type()) : _alloc(alloc),
+																 _arr(this->_alloc.allocate(1)),
+																 _capacity(1),
+																 _size(0)
 		{
 		}
 
-		vector(size_type n, const_reference val = value_type()) : _arr(NULL),
-																  _capacity(0),
-																  _size(0)
+		vector(size_type n, const_reference val = value_type(), const allocator_type &alloc = allocator_type()) : _alloc(alloc),
+																												  _arr(NULL),
+																												  _capacity(0),
+																												  _size(0)
 		{
 			if (n == 0)
 			{
@@ -302,15 +67,16 @@ namespace ft
 			this->assign(n, val);
 		}
 
-		vector(iterator first, iterator last) : _alloc(std::allocator<value_type>()),
-												_arr(this->_alloc.allocate(1)),
-												_capacity(1),
-												_size(0)
+		template <class InputIterator>
+		vector(InputIterator first, InputIterator last, const allocator_type &alloc = allocator_type()) : _alloc(alloc),
+																																													 _arr(this->_alloc.allocate(1)),
+																																													 _capacity(1),
+																																													 _size(0)
 		{
 			this->assign(first, last);
 		}
 
-		vector(vector const &rhs) : _alloc(std::allocator<value_type>()),
+		vector(vector const &rhs) : _alloc(rhs._alloc),
 									_arr(this->_alloc.allocate(1)),
 									_capacity(1),
 									_size(0)
@@ -353,12 +119,12 @@ namespace ft
 
 		reverse_iterator rbegin(void)
 		{
-			return (reverse_iterator(this->_arr + this->_size));
+			return (reverse_iterator(this->end()));
 		}
 
 		const_reverse_iterator rbegin(void) const
 		{
-			return (const_reverse_iterator(this->_arr + this->_size));
+			return (const_reverse_iterator(this->end()));
 		}
 
 		iterator end(void)
@@ -373,12 +139,12 @@ namespace ft
 
 		reverse_iterator rend(void)
 		{
-			return (reverse_iterator(this->_arr));
+			return (reverse_iterator(this->begin()));
 		}
 
 		const_reverse_iterator rend(void) const
 		{
-			return (const_reverse_iterator(this->_arr));
+			return (const_reverse_iterator(this->begin()));
 		}
 
 		// Capacity
@@ -483,9 +249,10 @@ namespace ft
 		//Modifiers
 
 		// range (1)
-		void assign(iterator first, iterator last)
+		template <class InputIterator>
+		void assign(InputIterator first, InputIterator last, typename enable_if<!is_integral<InputIterator>::value, bool>::type = true)
 		{
-			ptrdiff_t diff = last - first;
+			difference_type diff = last - first;
 			if (diff < 0)
 				throw std::range_error("vector: invalid range");
 			else if (!diff)
@@ -575,9 +342,10 @@ namespace ft
 		}
 
 		// range (3)
-		void insert(iterator position, iterator first, iterator last)
+		template <class InputIterator>
+		void insert(iterator position, InputIterator first, InputIterator last, typename enable_if<!is_integral<InputIterator>::value, bool>::type = true)
 		{
-			ptrdiff_t diff = last - first;
+			difference_type diff = last - first;
 			if (diff < 0)
 				throw std::range_error("vector: invalid range");
 			else if (!diff)
@@ -622,7 +390,7 @@ namespace ft
 		{
 			if (!this->_size)
 				return first;
-			ptrdiff_t diff = last - first;
+			difference_type diff = last - first;
 			size_type pos = first.asIndex(this->_arr);
 			if (diff < 0)
 				throw std::range_error("vector: invalid range");
@@ -644,6 +412,11 @@ namespace ft
 
 		void swap(vector &x)
 		{
+			// _alloc
+			allocator_type tmp_alloc = this->_alloc;
+			this->_alloc = x._alloc;
+			x._alloc = tmp_alloc;
+
 			size_type tmp;
 			// _size
 			tmp = x._size;
@@ -670,6 +443,12 @@ namespace ft
 			this->_capacity = 1;
 		}
 
+		// allocator
+		allocator_type get_allocator() const
+		{
+			return this->_alloc;
+		}
+
 	private:
 		std::allocator<value_type> _alloc;
 		pointer _arr;
@@ -689,8 +468,8 @@ namespace ft
 		}
 	}; // class vector
 
-	template <typename T>
-	bool operator==(vector<T> const &lhs, vector<T> const &rhs)
+	template <typename T, class Alloc>
+	bool operator==(vector<T, Alloc> const &lhs, vector<T, Alloc> const &rhs)
 	{
 		if (lhs.size() != rhs.size())
 			return (false);
@@ -700,52 +479,38 @@ namespace ft
 		return (true);
 	}
 
-	template <typename T>
-	bool operator!=(vector<T> const &lhs, vector<T> const &rhs)
+	template <typename T, class Alloc>
+	bool operator!=(vector<T, Alloc> const &lhs, vector<T, Alloc> const &rhs)
 	{
 		return (!(lhs == rhs));
 	}
 
-	template <typename T>
-	bool operator<(vector<T> const &lhs, vector<T> const &rhs)
+	template <typename T, class Alloc>
+	bool operator<(vector<T, Alloc> const &lhs, vector<T, Alloc> const &rhs)
 	{
-		typename vector<T>::iterator first1 = lhs.begin();
-		typename vector<T>::iterator last1 = lhs.end();
-		typename vector<T>::iterator first2 = rhs.begin();
-		typename vector<T>::iterator last2 = rhs.end();
-
-		while (first1 != last1)
-		{
-			if (first2 == last2 || *first2 < *first1)
-				return false;
-			else if (*first1 < *first2)
-				return true;
-			++first1;
-			++first2;
-		}
-		return (first2 != last2);
+		return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 	}
 
-	template <typename T>
-	bool operator<=(vector<T> const &lhs, vector<T> const &rhs)
+	template <typename T, class Alloc>
+	bool operator<=(vector<T, Alloc> const &lhs, vector<T, Alloc> const &rhs)
 	{
 		return (!(rhs < lhs));
 	}
 
-	template <typename T>
-	bool operator>(vector<T> const &lhs, vector<T> const &rhs)
+	template <typename T, class Alloc>
+	bool operator>(vector<T, Alloc> const &lhs, vector<T, Alloc> const &rhs)
 	{
 		return (rhs < lhs);
 	}
 
-	template <typename T>
-	bool operator>=(vector<T> const &lhs, vector<T> const &rhs)
+	template <typename T, class Alloc>
+	bool operator>=(vector<T, Alloc> const &lhs, vector<T, Alloc> const &rhs)
 	{
 		return (!(lhs < rhs));
 	}
 
-	template <typename T>
-	void swap(vector<T> &x, vector<T> &y)
+	template <typename T, class Alloc>
+	void swap(vector<T, Alloc> &x, vector<T, Alloc> &y)
 	{
 		x.swap(y);
 	}
