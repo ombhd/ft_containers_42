@@ -6,7 +6,7 @@
 /*   By: obouykou <obouykou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/06 23:15:44 by obouykou          #+#    #+#             */
-/*   Updated: 2021/06/16 10:15:29 by obouykou         ###   ########.fr       */
+/*   Updated: 2021/10/02 13:27:07 by obouykou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,11 @@ int main(void)
 		std::cout << "\nfront() & back()" << std::endl;
 		std::cout << "=======================================" << std::endl;
 		NS::vector<int> myvect;
+		int arr[5] = {1, 2, 3, 4, 5};
+		NS::vector<int> myvect2(arr, arr+5);
+
+		print_vector(myvect2, "myvect2");
+		
 
 		myvect.push_back(77);
 		myvect.push_back(22);
