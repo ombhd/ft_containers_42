@@ -3,30 +3,21 @@
 // of std::allocator() function
 #include <iostream>
 #include <memory>
+#include <map>
 using namespace std;
 int main()
 {
 
-	// allocator for integer values
-	allocator<int> myAllocator;
+	std::map<std::string, int> m;
+	m["hello"] = 1;
+	m["world"] = 2;
+	m["hallo"] = 3;
+	m["sekai"] = 4;
 
-	// allocate space for five ints
-	int *arr = myAllocator.allocate(5);
-
-	// construct arr[0] and arr[3]
-	for (size_t i = 0; i < 5; i++)
+	for(std::map<std::string, int>::iterator it = m.begin(); it != m.end(); ++it)
 	{
-		myAllocator.construct(&arr[i], arr[i]);
-		cout << arr[i] << endl;
+		cout << it->first << " " << it->second << endl;
 	}
-
-	arr[3] = 10;
-
-	// cout << arr[3] << endl;
-	// cout << arr[0] << endl;
-
-	// deallocate space for five ints
-	myAllocator.deallocate(arr, 5);
 
 	return 0;
 }
