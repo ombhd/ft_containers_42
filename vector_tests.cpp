@@ -6,7 +6,7 @@
 /*   By: obouykou <obouykou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/06 23:15:44 by obouykou          #+#    #+#             */
-/*   Updated: 2021/10/02 13:27:07 by obouykou         ###   ########.fr       */
+/*   Updated: 2021/10/02 16:09:03 by obouykou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,16 +22,14 @@
 template <typename T>
 void print_namespace(ft::vector<T> const &vec)
 {
-	if (vec.size())
-		vec.empty();
+	vec.empty();
 	std::cout << "\nNAMESPACE : ft" << std::endl;
 }
 
 template <typename T>
 void print_namespace(std::vector<T> const &vect)
 {
-	if (vect.size())
-		vect.empty();
+	vect.empty();
 	std::cout << "\nNAMESPACE : std" << std::endl;
 }
 
