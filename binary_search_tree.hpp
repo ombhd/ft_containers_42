@@ -6,7 +6,7 @@
 /*   By: obouykou <obouykou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 16:15:06 by obouykou          #+#    #+#             */
-/*   Updated: 2021/10/04 18:59:39 by obouykou         ###   ########.fr       */
+/*   Updated: 2021/10/05 15:02:17 by obouykou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,16 @@ namespace ft
 		node_ptr right;
 		value_type value;
 
-		TreeNode(value_type const &value = value_type(), bool color = RED, node_ptr parent = nullptr, node_ptr left = nullptr, node_ptr right = nullptr)
-			: color(color), parent(parent), left(left), right(right), value(value)
+		TreeNode(value_type const &value = value_type(), 
+				 bool color = RED, 
+				 node_ptr parent = nullptr, 
+				 node_ptr left = nullptr, 
+				 node_ptr right = nullptr)
+			: color(color), 
+			parent(parent), 
+			left(left), 
+			right(right), 
+			value(value)
 		{
 		}
 
