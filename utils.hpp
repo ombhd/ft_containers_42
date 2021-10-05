@@ -6,7 +6,7 @@
 /*   By: obouykou <obouykou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 12:01:43 by obouykou          #+#    #+#             */
-/*   Updated: 2021/10/02 15:20:26 by obouykou         ###   ########.fr       */
+/*   Updated: 2021/10/05 15:51:55 by obouykou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,11 +86,8 @@ namespace ft
 
 	// define vector iterator
 	template <class Iterator>
-	class vector_iterator : public iterator<typename iterator_traits<Iterator>::iterator_category,
-											typename iterator_traits<Iterator>::value_type,
-											typename iterator_traits<Iterator>::difference_type,
-											typename iterator_traits<Iterator>::pointer,
-											typename iterator_traits<Iterator>::reference>
+	class vector_iterator : public iterator<ft::random_access_iterator_tag,
+											typename iterator_traits<Iterator>::value_type>
 	{
 
 	public:
@@ -259,11 +256,8 @@ namespace ft
 
 	// define reverse iterator
 	template <class Iterator>
-	class reverse_iterator : public iterator<typename iterator_traits<Iterator>::iterator_category,
-											 typename iterator_traits<Iterator>::value_type,
-											 typename iterator_traits<Iterator>::difference_type,
-											 typename iterator_traits<Iterator>::pointer,
-											 typename iterator_traits<Iterator>::reference>
+	class reverse_iterator : public iterator<ft::random_access_iterator_tag,
+											 typename iterator_traits<Iterator>::value_type>
 	{
 	public:
 		// typedefs
@@ -525,7 +519,7 @@ namespace ft
 
 	template <>
 	struct is_integral<long int>
-	{ 
+	{
 		static const bool value = true;
 	};
 
