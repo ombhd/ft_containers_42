@@ -6,7 +6,7 @@
 /*   By: obouykou <obouykou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/07 15:52:04 by obouykou          #+#    #+#             */
-/*   Updated: 2021/10/02 13:30:16 by obouykou         ###   ########.fr       */
+/*   Updated: 2021/10/05 15:54:17 by obouykou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,8 @@ namespace ft
 		typedef ptrdiff_t difference_type;
 		typedef vector_iterator<pointer> iterator;
 		typedef vector_iterator<const_pointer> const_iterator;
-		typedef reverse_iterator<const_iterator> const_reverse_iterator;
-		typedef reverse_iterator<iterator> reverse_iterator;
+		typedef vector_reverse_iterator<const_iterator> const_reverse_iterator;
+		typedef vector_reverse_iterator<iterator> reverse_iterator;
 
 		// constructors
 
