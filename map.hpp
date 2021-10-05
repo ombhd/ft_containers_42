@@ -6,7 +6,7 @@
 /*   By: obouykou <obouykou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/02 16:26:08 by obouykou          #+#    #+#             */
-/*   Updated: 2021/10/04 18:43:12 by obouykou         ###   ########.fr       */
+/*   Updated: 2021/10/05 16:29:42 by obouykou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,25 +28,26 @@ namespace ft
 			  >
 	class map
 	{
-		private:
-		
+	private:
 	public:
 		// typedef typenames
 		typedef Key key_type;
 		typedef T mapped_type;
 		typedef pair<const key_type, mapped_type> value_type;
 		typedef Compare key_compare;
-		class value_compare : public std::binary_function<value_type,value_type,bool>
+		class value_compare : public std::binary_function<value_type, value_type, bool>
 		{
 			friend class map;
-			private:
-				key_compare comp;
-			public:
-				value_compare(const key_compare &x) : comp(x) {}
-				bool operator()(const value_type &x, const value_type &y) const
-				{
-					return comp(x.first, y.first);
-				}
+
+		private:
+			key_compare comp;
+
+		public:
+			value_compare(const key_compare &x) : comp(x) {}
+			bool operator()(const value_type &x, const value_type &y) const
+			{
+				return comp(x.first, y.first);
+			}
 		};
 		typedef Alloc allocator_type;
 		typedef typename allocator_type::reference reference;
@@ -56,8 +57,11 @@ namespace ft
 		typedef ptrdiff_t difference_type;
 		typedef size_t size_type;
 		typedef BinarySearchTree<value_type, value_compare, allocator_type> tree_type;
-
-		// typedefs for iterator
+		// TODO: typedefs for iterator
+		typedef TreeIterator<value_type, key_compare> iterator;
+		typedef TreeIterator<const value_type, key_compare> const_iterator;
+		typedef TreeReverseIterator<iterator, key_compare> reverse_iterator;
+		typedef TreeReverseIterator<const_iterator, key_compare> const_reverse_iterator;
 
 		// define construtors
 
@@ -73,16 +77,111 @@ namespace ft
 			const key_compare &comp = key_compare(),
 			const allocator_type &alloc = allocator_type()) : tree(comp, alloc)
 		{
+			this->insert(first, last);
 		}
 
 		// copy (3)
 		map(const map &x)
 		{
+			*this = x;
+		}
+
+		// operator=
+		map &operator=(const map &x)
+		{
+			if (this != &x)
+			{
+				this->clear();
+				this->insert(x.begin(), x.end());
+			}
+		}
+
+		// Iterators:
+
+		iterator begin()
+		{
+			return (iterator(tree.getStart()));
+		}
+
+		const_iterator begin() const
+		{
+			return (iterator(tree.getStart()));
+		}
+
+		iterator end()
+		{
+			return iterator(tree.getEnd());
+		}
+
+		const_iterator end() const
+		{
+			return iterator(tree.getEnd());
+		}
+
+		reverse_iterator rbegin()
+		{
+			return reverse_iterator(tree.getEnd());
+		}
+		const_reverse_iterator rbegin() const
+		{
+			return reverse_iterator(tree.getEnd());
+		}
+
+		reverse_iterator rend()
+		{
+			return reverse_iterator(tree.getStart());
+		}
+		const_reverse_iterator rend() const
+		{
+			return reverse_iterator(tree.getStart());
+		}
+
+		// Capacity:
+
+		bool empty() const
+		{
+			return this->size() == 0;
+		}
+
+		size_type size() const
+		{
+			return tree.getSize();
+		}
+
+		size_type max_size() const
+		{
+			return tree.getAllocator().max_size();
+		}
+
+		// Element access:
+
+		mapped_type &operator[](const key_type &k)
+		{
+			return tree.getElementByKey(k);
+		}
+
+		// insert
+		// single element (1)
+		pair<iterator, bool> insert(const value_type &val)
+		{
+		}
+		// with hint (2)
+		iterator insert(iterator position, const value_type &val)
+		{
+		}
+		// range (3)
+		template <class InputIterator>
+		void insert(InputIterator first, InputIterator last)
+		{
+		}
+
+		void clear()
+		{
 		}
 
 	private:
 		// define data members
-		tree_type tree;	
+		tree_type tree;
 	}; // map class
 
 } // namespace ft
