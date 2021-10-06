@@ -6,7 +6,7 @@
 /*   By: obouykou <obouykou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/07 15:52:04 by obouykou          #+#    #+#             */
-/*   Updated: 2021/10/05 15:54:17 by obouykou         ###   ########.fr       */
+/*   Updated: 2021/10/06 15:17:42 by obouykou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,9 @@
 #include <limits>
 #include <algorithm>
 #include <stdexcept>
-#include <vector>
 #include <iostream>
 
 #include "utils.hpp"
-
-std::vector<int> vec(4, 100);
 
 namespace ft
 {

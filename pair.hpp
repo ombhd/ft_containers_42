@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   map_utils.hpp                                      :+:      :+:    :+:   */
+/*   pair.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: obouykou <obouykou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/02 16:31:54 by obouykou          #+#    #+#             */
-/*   Updated: 2021/10/02 17:35:01 by obouykou         ###   ########.fr       */
+/*   Updated: 2021/10/06 10:08:20 by obouykou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,7 @@ namespace ft
 		second_type second;
 
 		// define constructors
-		pair() : first(first_type()), second(second_type()) {}
-
-		pair(const first_type &a, const second_type &b) : first(a), second(b) {}
+		pair(const first_type &a = first_type(), const second_type &b = second_type()) : first(a), second(b) {}
 
 		template <class U, class V>
 		pair(const pair<U, V> &p) : first(p.first), second(p.second) {}

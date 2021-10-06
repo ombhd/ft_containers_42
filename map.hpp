@@ -6,7 +6,7 @@
 /*   By: obouykou <obouykou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/02 16:26:08 by obouykou          #+#    #+#             */
-/*   Updated: 2021/10/05 16:29:42 by obouykou         ###   ########.fr       */
+/*   Updated: 2021/10/06 11:54:51 by obouykou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,6 @@ namespace ft
 		typedef ptrdiff_t difference_type;
 		typedef size_t size_type;
 		typedef BinarySearchTree<value_type, value_compare, allocator_type> tree_type;
-		// TODO: typedefs for iterator
 		typedef TreeIterator<value_type, key_compare> iterator;
 		typedef TreeIterator<const value_type, key_compare> const_iterator;
 		typedef TreeReverseIterator<iterator, key_compare> reverse_iterator;
@@ -160,19 +159,45 @@ namespace ft
 			return tree.getElementByKey(k);
 		}
 
+		// Modifiers:
+
 		// insert
 		// single element (1)
-		pair<iterator, bool> insert(const value_type &val)
+		ft::pair<iterator, bool> insert(const value_type &val)
 		{
+			return tree.insert(val);
 		}
 		// with hint (2)
-		iterator insert(iterator position, const value_type &val)
+		iterator insert(iterator hint, const value_type &val)
 		{
+			return tree.insert(hint, val);
 		}
 		// range (3)
 		template <class InputIterator>
 		void insert(InputIterator first, InputIterator last)
 		{
+			while (first != last)
+				tree.insert(*first++);
+		}
+
+		// erase
+
+		// (1)
+		void erase(iterator position)
+		{
+			tree.removeByPosition(position);
+		}
+		// single element (2)
+		size_type erase(const key_type &k)
+		{
+			return tree.removeByKey(k);
+		}
+		// range (3)
+		iterator erase(iterator first, iterator last)
+		{
+			while (first != last)
+				first = tree.removeByPosition(first);
+			return first;
 		}
 
 		void clear()

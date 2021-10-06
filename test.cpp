@@ -8,16 +8,15 @@ using namespace std;
 int main()
 {
 
-	std::map<std::string, int> m;
-	m["hello"] = 1;
-	m["world"] = 2;
-	m["hallo"] = 3;
-	m["sekai"] = 4;
+	std::map<int, int> m;
 
-	for(std::map<std::string, int>::iterator it = m.begin(); it != m.end(); ++it)
-	{
-		cout << it->first << " " << it->second << endl;
-	}
+
+	std::map<int, int>::iterator it = m.end();
+	std::cout << "last =|" << it->second << "|" << it->first<< "|" << std::endl;
+
+
+	it = m.begin();
+	std::cout << "first =|" << it->second << "|" << it->first<< "|" << std::endl;
 
 	return 0;
 }

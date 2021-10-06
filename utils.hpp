@@ -6,7 +6,7 @@
 /*   By: obouykou <obouykou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 12:01:43 by obouykou          #+#    #+#             */
-/*   Updated: 2021/10/05 15:53:50 by obouykou         ###   ########.fr       */
+/*   Updated: 2021/10/06 17:30:58 by obouykou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ namespace ft
 		// typedefs
 		typedef Iterator iterator_type;
 		typedef typename iterator_traits<Iterator>::difference_type difference_type;
-		typedef typename iterator_traits<Iterator>::pointer pointer;
+		typedef typename iterator<ft::random_access_iterator_tag, typename iterator_traits<Iterator>::value_type>::pointer pointer;
 		typedef typename iterator_traits<Iterator>::reference reference;
 
 		// default (1)

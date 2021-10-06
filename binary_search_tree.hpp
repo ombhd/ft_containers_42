@@ -6,7 +6,7 @@
 /*   By: obouykou <obouykou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 16:15:06 by obouykou          #+#    #+#             */
-/*   Updated: 2021/10/05 16:34:03 by obouykou         ###   ########.fr       */
+/*   Updated: 2021/10/06 14:13:57 by obouykou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,13 +59,17 @@ namespace ft
 		void linkRight(node_ptr nodePtr)
 		{
 			nodePtr->parent = this;
+			nodePtr->right = this->right;
+			nodePtr->left = nullptr;
 			this->right = nodePtr;
+			nodePtr->isRightChild = true;
 		}
 
 		void linkLeft(node_ptr nodePtr)
 		{
 			nodePtr->parent = this;
 			this->left = nodePtr;
+			nodePtr->isRightChild = false;
 		}
 
 		node_ptr unlinkRight(node_ptr nodePtr)
@@ -86,16 +90,45 @@ namespace ft
 	class TreeIterator
 	{
 	public:
-		TreeIterator() {}
+		typedef TreeNode<T> *node_ptr;
+		typedef T value_type;
+
+		TreeIterator(node_ptr pos = nullptr) : current(pos), comp(Compare()), end(findEnd())
+		{
+		}
+
+		TreeIterator(TreeIterator const &other) : current(other.current)
+		{
+		}
+
+		TreeIterator &operator=(TreeIterator const &other)
+		{
+			this->current = other.current;
+			return *this;
+		}
 		~TreeIterator() {}
 
 	private:
+		Compare comp;
+		node_ptr current;
+		node_ptr end;
+
+		node_ptr findEnd()
+		{
+			node_ptr end = this->current;
+			while (end->right != nullptr)
+				end = end->right;
+			return end;
+		}
 	};
 
 	template <typename T, class Compare>
 	class TreeReverseIterator
 	{
 	public:
+		typedef TreeNode<T> *node_ptr;
+		typedef T value_type;
+
 		TreeReverseIterator() {}
 		~TreeReverseIterator() {}
 
@@ -115,67 +148,23 @@ namespace ft
 		typedef size_t size_type;
 		typedef Alloc allocator_type;
 		typedef Compare key_compare;
+		typedef TreeIterator<value_type, key_compare> iterator;
 
 		BinarySearchTree(const key_compare &comp = key_compare(),
 						 const allocator_type &alloc = allocator_type()) : alloc(alloc),
 																		   comp(comp),
-																		   root(nullptr),
-																		   start(alloc.allocate(1)),
-																		   end(start),
+																		   root(alloc.allocate(1)),
+																		   start(root),
+																		   end(root),
 																		   size(0)
-
 		{
-			alloc.construct(start, node());
+			alloc.construct(root, node());
 		}
 		~BinarySearchTree()
 		{
-			// TODO: implement clear() method
-			// clear();
+			clear();
 			alloc.destroy(start);
 			alloc.deallocate(start, 1);
-		}
-
-		void insert(value_type value)
-		{
-			if (this->root == nullptr)
-			{
-				this->root = new node(value, BLACK);
-				this->size++;
-				return;
-			}
-			node_ptr current = this->root;
-			while (current != nullptr)
-			{
-				if (value < current->value)
-				{
-					if (current->left == nullptr)
-					{
-						current->linkLeft(new node(value));
-						this->size++;
-						return;
-					}
-					current = current->left;
-				}
-				else if (value > current->value)
-				{
-					if (current->right == nullptr)
-					{
-						current->linkRight(new node(value));
-						this->size++;
-						return;
-					}
-					current = current->right;
-				}
-				else
-				{
-					return;
-				}
-			}
-		}
-
-		mapped_type getElementByKey(key_type const &k)
-		{
-			
 		}
 
 		node_ptr const &getStart() const
@@ -188,25 +177,128 @@ namespace ft
 			return end;
 		}
 
-		size_type const & getSize() const
+		size_type const &getSize() const
 		{
 			return size;
 		}
 
-		allocator_type & getAllocator() const
+		allocator_type &getAllocator() const
 		{
 			return alloc;
 		}
-		// define clear()
+
+		mapped_type &getElementByKey(key_type const &k)
+		{
+		}
+
+		// template <typename iterator>
+		ft::pair<iterator, bool> insert(value_type const &value)
+		{
+			if (this->root == end)
+			{
+
+				this->root = new_node(value, BLACK);
+				this->size++;
+				this->start = this->root;
+				return ft::make_pair(iterator(this->root), true);
+			}
+			node_ptr current = this->root;
+			while (current != nullptr)
+			{
+				if (!comp(value->first, current->value->first) && !comp(current->value->first, value->first))
+					return ft::make_pair(iterator(current), false);
+				else if (comp(value->first, current->value->first))
+				{
+					if (current->left == nullptr)
+					{
+						current->linkLeft(new node(value));
+						this->size++;
+						this->start = this->current->left;
+						return ft::make_pair(iterator(current->right), true);
+					}
+					current = current->right;
+				}
+				else
+				{
+					if (current->right == this->end)
+					{
+						current->linkRight(new node(value));
+						this->size++;
+						return ft::make_pair(iterator(current->left), true);
+					}
+					current = current->left;
+				}
+			}
+		}
+
+		iterator insert(iterator hint, value_type const &value)
+		{
+			ft::pair<iterator, bool> result = insert(value);
+			if (result.second)
+				return result.first;
+			else
+				return hint;
+		}
+
+		iterator removeByKey(const key_type &key)
+		{
+			node_ptr current = this->root;
+			node_ptr parent = nullptr;
+			while (current != nullptr)
+			{
+				if (comp(key, current->value->first))
+				{
+					parent = current;
+					current = current->left;
+				}
+				else if (comp(current->value->first, key))
+				{
+					parent = current;
+					current = current->right;
+				}
+				else
+				{
+					if (current->left == nullptr)
+					{
+					}
+					else if (current->right == this->end)
+					{
+					}
+					else
+					{
+					}
+				}
+			}
+			return iterator();
+		}
+
+		void removeByPosition(iterator &it)
+		{
+		}
+
+		void clear()
+		{
+			// TODO: implement clear() methodd
+		}
 
 	private:
-		//TODO: change the type of the allocator at the end of dev 
+		// private data members
+		//TODO: change the type of the allocator at the end of dev
 		std::allocator<value_type> alloc;
 		key_compare comp;
 		node_ptr root;
 		node_ptr start;
 		node_ptr end;
 		size_type size;
+
+		// private member methods
+
+		node_ptr new_node(value_type const &value, bool const &color)
+		{
+			node_ptr newNode = alloc.allocate(1);
+			alloc.construct(newNode, node(value, color));
+			return newNode;
+		}
 	}; // class BinarySearchTree
 
 } // namespace ft

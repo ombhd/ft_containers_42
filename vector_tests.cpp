@@ -6,7 +6,7 @@
 /*   By: obouykou <obouykou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/06 23:15:44 by obouykou          #+#    #+#             */
-/*   Updated: 2021/10/02 16:09:03 by obouykou         ###   ########.fr       */
+/*   Updated: 2021/10/06 17:30:51 by obouykou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -348,6 +348,45 @@ int main(void)
 			std::cout << "[" << *ite << "]  ";
 		}
 		std::cout << "\n=======================================" << std::endl;
+	}
+	// const_iterator
+	{
+		std::cout << "\nconst iterators" << std::endl;
+		std::cout << "=======================================" << std::endl;
+		NS::vector<int> l;
+		l.push_back(1);
+		l.push_back(2);
+		l.push_back(3);
+		l.push_back(4);
+		l.push_back(5);
+		NS::vector<int>::const_iterator ite = l.begin();
+		NS::vector<int>::const_iterator it = l.end();
+		for (; it != ite; ite++)
+		{
+			std::cout << "[" << *ite << "]  ";
+		}
+		std::cout << "\n=======================================" << std::endl;
+	
+	}
+
+	// iterator relational operators
+	{
+		std::cout << "\nrelational operators for iterator" << std::endl;
+		std::cout << "=======================================" << std::endl;
+		NS::vector<int> l;
+		l.push_back(1);
+		l.push_back(2);
+		l.push_back(3);
+		l.push_back(4);
+		l.push_back(5);
+		NS::vector<int>::const_iterator ite = l.begin();
+		NS::vector<int>::const_iterator it = l.begin() + 2;
+		std::cout << "first=" << *ite << std::endl;
+		std::cout << "third=" << *it << std::endl;
+		std::cout << "difference=" << it - ite << std::endl;
+		
+		std::cout << "\n=======================================" << std::endl;
+	
 	}
 
 	return 0;
