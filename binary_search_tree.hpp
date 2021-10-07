@@ -6,7 +6,7 @@
 /*   By: obouykou <obouykou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 16:15:06 by obouykou          #+#    #+#             */
-/*   Updated: 2021/10/06 14:13:57 by obouykou         ###   ########.fr       */
+/*   Updated: 2021/10/07 18:55:41 by obouykou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 #include <iostream>
 
+#include "utils.hpp"
 #include "pair.hpp"
 
 #define RED true
@@ -60,7 +61,6 @@ namespace ft
 		{
 			nodePtr->parent = this;
 			nodePtr->right = this->right;
-			nodePtr->left = nullptr;
 			this->right = nodePtr;
 			nodePtr->isRightChild = true;
 		}
@@ -87,7 +87,8 @@ namespace ft
 
 	// TreeIterator : Binary Search Tree Iterator definition
 	template <typename T, class Compare>
-	class TreeIterator
+	class TreeIterator : public iterator<std::bidirectional_iterator_tag,
+										 typename ft::iterator_traits<T>::value_type>
 	{
 	public:
 		typedef TreeNode<T> *node_ptr;
@@ -97,22 +98,104 @@ namespace ft
 		{
 		}
 
-		TreeIterator(TreeIterator const &other) : current(other.current)
+		TreeIterator(TreeIterator const &other)
 		{
+			*this = other;
 		}
 
 		TreeIterator &operator=(TreeIterator const &other)
 		{
-			this->current = other.current;
+			if (this != &other)
+			{
+				this->current = other.current;
+				this->comp = other.comp;
+				this->end = other.end;
+			}
 			return *this;
 		}
 		~TreeIterator() {}
+
+		bool operator==(TreeIterator const &other) const
+		{
+			return (this->current == other.current);
+		}
+
+		bool operator!=(TreeIterator const &other) const
+		{
+			return (this->current != other.current);
+		}
+
+		value_type &operator*() const
+		{
+			return this->current->value;
+		}
+
+		value_type *operator->() const
+		{
+			return &(this->current->value);
+		}
+
+		TreeIterator &operator++()
+		{
+			if (this->current == this->end)
+				return *this;
+			if (this->current->right != nullptr)
+			{
+				this->current = this->current->right;
+				while (this->current->left != nullptr)
+					this->current = this->current->left;
+			}
+			else
+			{
+				while (this->current->isRightChild)
+				{
+					this->current = this->current->parent;
+				}
+				this->current = this->current->parent;
+			}
+			return *this;
+		}
+
+		TreeIterator operator++(int)
+		{
+			TreeIterator tmp(*this);
+			++(*this);
+			return tmp;
+		}
+
+		TreeIterator &operator--()
+		{
+			if (this->current == this->start)
+				return *this;
+			if (this->current->left != nullptr)
+			{
+				this->current = this->current->left;
+				while (this->current->right != nullptr)
+					this->current = this->current->right;
+			}
+			else
+			{
+				if (this->current->isRightChild)
+				{
+					this->current = this->current->parent;
+				}
+			}
+			return *this;
+		}
+
+		TreeIterator operator--(int)
+		{
+			TreeIterator tmp(*this);
+			--(*this);
+			return tmp;
+		}
 
 	private:
 		Compare comp;
 		node_ptr current;
 		node_ptr end;
 
+		// find the end node of binary search tree
 		node_ptr findEnd()
 		{
 			node_ptr end = this->current;
@@ -123,16 +206,36 @@ namespace ft
 	};
 
 	template <typename T, class Compare>
-	class TreeReverseIterator
+	class TreeReverseIterator : public TreeIterator<T, Compare>
 	{
 	public:
 		typedef TreeNode<T> *node_ptr;
 		typedef T value_type;
 
-		TreeReverseIterator() {}
-		~TreeReverseIterator() {}
+		TreeReverseIterator(node_ptr pos = nullptr) : TreeIterator<T, Compare>(pos)
+		{
+		}
+
+		TreeReverseIterator(TreeReverseIterator const &other)
+		{
+			*this = other;
+		}
+
+		
 
 	private:
+		Compare comp;
+		node_ptr current;
+		node_ptr end;
+
+		// find the end node of binary search tree
+		node_ptr findEnd()
+		{
+			node_ptr end = this->current;
+			while (end->right != nullptr)
+				end = end->right;
+			return end;
+		}
 	};
 
 	// BinarySearchTree class definition
@@ -191,17 +294,37 @@ namespace ft
 		{
 		}
 
-		// template <typename iterator>
+		// define insert_left
+		ft::pair<iterator, bool> insert_left(node_ptr current, value_type const &value)
+		{
+			current->linkLeft(new_node(value));
+			this->size++;
+			this->start = this->current->left;
+			return ft::make_pair(iterator(current->right), true);
+		}
+
+		// define insert_right
+		ft::pair<iterator, bool> insert_right(node_ptr current, value_type const &value)
+		{
+			current->linkRight(new_node(value));
+			this->size++;
+			return ft::make_pair(iterator(current->right), true);
+		}
+
+		// define build root
+		ft::pair<iterator, bool> build_root(value_type const &value)
+		{
+			this->root = new_node(value, BLACK);
+			this->size++;
+			this->start = this->root;
+			return ft::make_pair(iterator(this->root), true);
+		}
+
+		// define insert
 		ft::pair<iterator, bool> insert(value_type const &value)
 		{
 			if (this->root == end)
-			{
-
-				this->root = new_node(value, BLACK);
-				this->size++;
-				this->start = this->root;
-				return ft::make_pair(iterator(this->root), true);
-			}
+				return build_root(value);
 			node_ptr current = this->root;
 			while (current != nullptr)
 			{
@@ -210,34 +333,29 @@ namespace ft
 				else if (comp(value->first, current->value->first))
 				{
 					if (current->left == nullptr)
-					{
-						current->linkLeft(new node(value));
-						this->size++;
-						this->start = this->current->left;
-						return ft::make_pair(iterator(current->right), true);
-					}
+						return (insert_left(current, value));
 					current = current->right;
 				}
 				else
 				{
 					if (current->right == this->end)
-					{
-						current->linkRight(new node(value));
-						this->size++;
-						return ft::make_pair(iterator(current->left), true);
-					}
+						return insert_right(current, value);
 					current = current->left;
 				}
 			}
 		}
 
+		// define insert with hint
 		iterator insert(iterator hint, value_type const &value)
 		{
-			ft::pair<iterator, bool> result = insert(value);
-			if (result.second)
-				return result.first;
+			ft::pair<iterator, bool> result;
+			if (hint.current->left == nullptr && comp(hint.current->value.first, value.first))
+				result = insert_left(hint.current, value);
+			else if (hint.current->right == nullptr && comp(value.first, hint.current->value.first))
+				result = insert_right(hint.current, value);
 			else
-				return hint;
+				result = insert(value);
+			return result.first;
 		}
 
 		iterator removeByKey(const key_type &key)
