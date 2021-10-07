@@ -6,7 +6,7 @@
 /*   By: obouykou <obouykou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/07 15:52:04 by obouykou          #+#    #+#             */
-/*   Updated: 2021/10/06 15:17:42 by obouykou         ###   ########.fr       */
+/*   Updated: 2021/10/07 16:12:54 by obouykou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,10 +65,11 @@ namespace ft
 		}
 
 		template <class InputIterator>
-		vector(InputIterator first, InputIterator last, const allocator_type &alloc = allocator_type()) : _alloc(alloc),
-																																													 _arr(this->_alloc.allocate(1)),
-																																													 _capacity(1),
-																																													 _size(0)
+		vector(InputIterator first, InputIterator last, const allocator_type &alloc = allocator_type(),
+				typename enable_if<!is_integral<InputIterator>::value, bool>::type = true) :_alloc(alloc),
+																							_arr(this->_alloc.allocate(1)),
+																							_capacity(1),
+																							_size(0)
 		{
 			this->assign(first, last);
 		}
