@@ -6,7 +6,7 @@
 /*   By: obouykou <obouykou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/02 16:26:08 by obouykou          #+#    #+#             */
-/*   Updated: 2021/10/06 11:54:51 by obouykou         ###   ########.fr       */
+/*   Updated: 2021/10/08 19:33:54 by obouykou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 #include <functional>
 
-#include "red_black_tree.hpp"
+#include "binary_search_tree.hpp"
 
 namespace ft
 {
@@ -59,8 +59,8 @@ namespace ft
 		typedef BinarySearchTree<value_type, value_compare, allocator_type> tree_type;
 		typedef TreeIterator<value_type, key_compare> iterator;
 		typedef TreeIterator<const value_type, key_compare> const_iterator;
-		typedef TreeReverseIterator<iterator, key_compare> reverse_iterator;
-		typedef TreeReverseIterator<const_iterator, key_compare> const_reverse_iterator;
+		typedef ft::reverse_iterator<iterator, std::bidirectional_iterator_tag> reverse_iterator;
+		typedef ft::reverse_iterator<const_iterator, std::bidirectional_iterator_tag> const_reverse_iterator;
 
 		// define construtors
 
@@ -99,22 +99,22 @@ namespace ft
 
 		iterator begin()
 		{
-			return (iterator(tree.getStart()));
+			return tree.getStart();
 		}
 
 		const_iterator begin() const
 		{
-			return (iterator(tree.getStart()));
+			return tree.getStart();
 		}
 
 		iterator end()
 		{
-			return iterator(tree.getEnd());
+			return tree.getEnd();
 		}
 
 		const_iterator end() const
 		{
-			return iterator(tree.getEnd());
+			return tree.getEnd();
 		}
 
 		reverse_iterator rbegin()
@@ -156,7 +156,10 @@ namespace ft
 
 		mapped_type &operator[](const key_type &k)
 		{
-			return tree.getElementByKey(k);
+			iterator it = this->find(k);
+			if (it == this->end())
+				it = this->insert(it, make_pair(k, mapped_type()));
+			return it->second;
 		}
 
 		// Modifiers:
@@ -190,7 +193,11 @@ namespace ft
 		// single element (2)
 		size_type erase(const key_type &k)
 		{
-			return tree.removeByKey(k);
+			iterator it = find(k);
+			if (it == this->end())
+				return 0;
+			tree.removeByPosition(it);
+			return 1;
 		}
 		// range (3)
 		iterator erase(iterator first, iterator last)
@@ -200,8 +207,93 @@ namespace ft
 			return first;
 		}
 
+		void swap(map &x)
+		{
+			tree.swap(x.tree);
+		}
+
 		void clear()
 		{
+			tree.clear();
+		}
+
+		// Observers:
+
+		key_compare key_comp() const
+		{
+			return tree.getComp();
+		}
+
+		value_compare value_comp() const
+		{
+			return value_compare(tree.getComp());
+		}
+
+		// Operations:
+		iterator find(const key_type &k)
+		{
+			return tree.findByKey(k);
+		}
+		const_iterator find(const key_type &k) const
+		{
+			return tree.findByKey(k);
+		}
+
+		size_type count(const key_type &k) const
+		{
+			iterator it = this->begin();
+			while (it != this->end())
+			{
+				if ((*it).first == k)
+					return 1;
+				++it;
+			}
+			return 0;
+		}
+
+		iterator lower_bound(const key_type &k)
+		{
+			iterator curr = this->begin();
+			iterator ite = this->end();
+
+			while (curr != ite)
+			{
+				if (!comp((*curr).first, k))
+					return curr;
+				curr++;
+			}
+			return curr;
+		}
+		const_iterator lower_bound(const key_type &k) const
+		{
+			return this->lower_bound(k);
+		}
+
+		iterator upper_bound(const key_type &k)
+		{
+			iterator curr = this->begin();
+			iterator ite = this->end();
+
+			while (curr != ite)
+			{
+				if (comp(k, (*curr).first))
+					return curr;
+				curr++;
+			}
+			return curr;
+		}
+		const_iterator upper_bound(const key_type &k) const
+		{
+			return this->upper_bound(k);
+		}
+
+		pair<const_iterator, const_iterator> equal_range(const key_type &k) const
+		{
+			ft::make_pair(lower_bound(k), upper_bound(k));
+		}
+		pair<iterator, iterator> equal_range(const key_type &k)
+		{
+			ft::make_pair(lower_bound(k), upper_bound(k));
 		}
 
 	private:

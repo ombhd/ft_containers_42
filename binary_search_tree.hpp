@@ -6,7 +6,7 @@
 /*   By: obouykou <obouykou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 16:15:06 by obouykou          #+#    #+#             */
-/*   Updated: 2021/10/07 18:55:41 by obouykou         ###   ########.fr       */
+/*   Updated: 2021/10/08 19:34:20 by obouykou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,7 +165,7 @@ namespace ft
 
 		TreeIterator &operator--()
 		{
-			if (this->current == this->start)
+			if (this->current == nullptr)
 				return *this;
 			if (this->current->left != nullptr)
 			{
@@ -190,40 +190,12 @@ namespace ft
 			return tmp;
 		}
 
-	private:
-		Compare comp;
-		node_ptr current;
-		node_ptr end;
-
-		// find the end node of binary search tree
-		node_ptr findEnd()
+		node_ptr const &asPointer() const
 		{
-			node_ptr end = this->current;
-			while (end->right != nullptr)
-				end = end->right;
-			return end;
-		}
-	};
-
-	template <typename T, class Compare>
-	class TreeReverseIterator : public TreeIterator<T, Compare>
-	{
-	public:
-		typedef TreeNode<T> *node_ptr;
-		typedef T value_type;
-
-		TreeReverseIterator(node_ptr pos = nullptr) : TreeIterator<T, Compare>(pos)
-		{
+			return this->current;
 		}
 
-		TreeReverseIterator(TreeReverseIterator const &other)
-		{
-			*this = other;
-		}
-
-		
-
-	private:
+	protected:
 		Compare comp;
 		node_ptr current;
 		node_ptr end;
@@ -270,14 +242,14 @@ namespace ft
 			alloc.deallocate(start, 1);
 		}
 
-		node_ptr const &getStart() const
+		iterator const &getStart() const
 		{
-			return start;
+			return iterator(start);
 		}
 
-		node_ptr const &getEnd() const
+		iterator const &getEnd() const
 		{
-			return end;
+			return iterator(end);
 		}
 
 		size_type const &getSize() const
@@ -288,10 +260,6 @@ namespace ft
 		allocator_type &getAllocator() const
 		{
 			return alloc;
-		}
-
-		mapped_type &getElementByKey(key_type const &k)
-		{
 		}
 
 		// define insert_left
@@ -376,15 +344,7 @@ namespace ft
 				}
 				else
 				{
-					if (current->left == nullptr)
-					{
-					}
-					else if (current->right == this->end)
-					{
-					}
-					else
-					{
-					}
+					// if (current->left == nullptr)
 				}
 			}
 			return iterator();
@@ -394,9 +354,64 @@ namespace ft
 		{
 		}
 
+		void swap(BinarySearchTree &other)
+		{
+			std::swap(this->root, other.root);
+			std::swap(this->start, other.start);
+			std::swap(this->end, other.end);
+			std::swap(this->size, other.size);
+			std::swap(this->comp, other.comp);
+			std::swap(this->alloc, other.alloc);
+		}
+
 		void clear()
 		{
-			// TODO: implement clear() methodd
+			node_ptr current = this->root;
+			node_ptr parent = nullptr;
+			while (current != nullptr)
+			{
+				if (current->left == nullptr)
+				{
+					if (parent != nullptr)
+					{
+						if (parent->left == current)
+							parent->left = current->right;
+						else
+							parent->right = current->right;
+					}
+					else
+						this->root = current->right;
+					this->alloc.destroy(current);
+					this->alloc.deallocate(current, 1);
+					current = parent;
+				}
+				else
+				{
+					parent = current;
+					current = current->left;
+				}
+			}
+			this->size = 0;
+		}
+
+		key_compare getComp() const
+		{
+			return comp;
+		}
+
+		iterator findByKey(const key_type &key)
+		{
+			node_ptr current = this->root;
+			while (current != nullptr)
+			{
+				if (comp(key, current->value->first))
+					current = current->left;
+				else if (comp(current->value->first, key))
+					current = current->right;
+				else
+					return iterator(current);
+			}
+			return iterator(end);
 		}
 
 	private:

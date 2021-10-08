@@ -6,7 +6,7 @@
 /*   By: obouykou <obouykou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/06 23:15:44 by obouykou          #+#    #+#             */
-/*   Updated: 2021/10/07 18:35:45 by obouykou         ###   ########.fr       */
+/*   Updated: 2021/10/08 19:02:52 by obouykou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void print_map(NS::map<T, U> &mp, char const *label)
 	std::cout << "\nmap Size: " << mp.size();
 	std::cout << "\nmap [" << label << "] contains: ";
 	if (!mp.size())
-		std::cout << "\tnothing";
+		std::cout << "nothing";
 	else
 		std::cout << "\n\n";
 	for (typename NS::map<T, U>::iterator it = mp.begin(); it != mp.end(); ++it)
@@ -58,26 +58,35 @@ int main(void)
 	NS::map<int, int> maptLocal;
 	maptLocal[12] = 12;
 	maptLocal[6] = 13;
-	maptLocal[5] = 14;
-	maptLocal[3] = 15;
+	maptLocal[-20] = 14;
 	maptLocal[4] = 16;
 	maptLocal[7] = 17;
-	maptLocal[8] = 18;
-	maptLocal[14] = 19;
-	maptLocal[20] = 20;
-	maptLocal[30] = 21;
+	maptLocal[15] = 18;
 
-	// print_map(maptLocal, "maptLocal");
-	NS::map<int, int>::iterator it = maptLocal.begin();
-	it--;
+	print_map(maptLocal, "maptLocal");
+	int i = 15;
+	NS::map<int, int>::iterator it = maptLocal.lower_bound(i);
+	NS::map<int, int>::iterator itu = maptLocal.upper_bound(i);
+	// NS::map<int, int>::key_compare comp = maptLocal.key_comp();
+	// if (comp(0, 1))
+	// 	std::cout << "0 < 1" << std::endl;
+	// if (comp(1, 0))
+	// 	std::cout << "1 < 0" << std::endl;
+
+	// it--;
 	// it++;
 	// it++;
 	// it++;
 	// it++;
 	// it--;
 
-	std::cout << "[" << it->first << "]" << std::endl;
+	std::cout << "lower bound of " << i << " ==> [" << it->first << "]" << std::endl;
+	if (it == maptLocal.end())
+		std::cout << "it's end" << std::endl;
 
+	std::cout << "upper bound of " << i << " ==> [" << itu->first << "]" << std::endl;
+	if (itu == maptLocal.end())
+		std::cout << "it's end" << std::endl;
 	return 0;
 }
 
