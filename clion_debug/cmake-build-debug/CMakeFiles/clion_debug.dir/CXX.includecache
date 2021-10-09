@@ -1,0 +1,38 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/obouykou/Desktop/new_ft_containers_42/clion_debug/binary_search_tree.hpp
+iostream
+-
+cstdio
+-
+utils.hpp
+/Users/obouykou/Desktop/new_ft_containers_42/clion_debug/utils.hpp
+pair.hpp
+/Users/obouykou/Desktop/new_ft_containers_42/clion_debug/pair.hpp
+
+/Users/obouykou/Desktop/new_ft_containers_42/clion_debug/map.hpp
+functional
+-
+binary_search_tree.hpp
+/Users/obouykou/Desktop/new_ft_containers_42/clion_debug/binary_search_tree.hpp
+
+/Users/obouykou/Desktop/new_ft_containers_42/clion_debug/map_tests.cpp
+map
+-
+iostream
+-
+map.hpp
+/Users/obouykou/Desktop/new_ft_containers_42/clion_debug/map.hpp
+
+/Users/obouykou/Desktop/new_ft_containers_42/clion_debug/pair.hpp
+
+/Users/obouykou/Desktop/new_ft_containers_42/clion_debug/utils.hpp
+iostream
+-
+

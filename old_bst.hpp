@@ -6,7 +6,7 @@
 /*   By: obouykou <obouykou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 16:15:06 by obouykou          #+#    #+#             */
-/*   Updated: 2021/10/09 19:29:01 by obouykou         ###   ########.fr       */
+/*   Updated: 2021/10/09 16:13:29 by obouykou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,6 @@
 #define RIGHT 'R'
 #define LEFT 'L'
 #define NONE 'N'
-
-#ifndef DEBUG
-#define DEBUG false
-#endif // !DEBUG
 
 // TODO: to remove
 #define check std::cout << "============ > checked < ===========" << std::endl;
@@ -82,8 +78,6 @@ namespace ft
 		{
 			nodePtr->parent = this;
 			nodePtr->right = this->right;
-			if (this->right)
-				this->right->parent = nodePtr;
 			this->right = nodePtr;
 			nodePtr->isRightChild = true;
 		}
@@ -151,7 +145,7 @@ namespace ft
 		typedef TreeNode<T> *node_ptr;
 		typedef T value_type;
 
-		TreeIterator(node_ptr pos = nullptr) : current(pos)
+		TreeIterator(node_ptr pos = nullptr) : current(pos), end(findEnd())
 		{
 		}
 
@@ -165,6 +159,7 @@ namespace ft
 			if (this != &other)
 			{
 				this->current = other.current;
+				this->end = other.end;
 			}
 			return *this;
 		}
@@ -252,6 +247,18 @@ namespace ft
 
 	protected:
 		node_ptr current;
+		node_ptr end;
+
+		// find the end node of binary search tree
+		node_ptr findEnd()
+		{
+			node_ptr end = this->current;
+			while (end->parent != nullptr)
+				end = end->parent;
+			while (end->right != nullptr)
+				end = end->right;
+			return end;
+		}
 	};
 
 	// BinarySearchTree class definition
@@ -274,6 +281,7 @@ namespace ft
 						 const allocator_type &alloc = allocator_type()) : alloc(alloc),
 																		   comp(comp),
 																		   root(this->alloc.allocate(1)),
+																		   start(root),
 																		   end(root),
 																		   size(0)
 		{
@@ -288,7 +296,7 @@ namespace ft
 
 		iterator getStart() const
 		{
-			return iterator(findMin(this->root));
+			return iterator(start);
 		}
 
 		iterator getEnd() const
@@ -311,6 +319,7 @@ namespace ft
 		{
 			current->linkLeft(new_node(value));
 			this->size++;
+			this->start = current->left;
 			return ft::make_pair(iterator(current->left), true);
 		}
 
@@ -327,6 +336,7 @@ namespace ft
 		{
 			this->root = new_node(value, BLACK);
 			this->size++;
+			this->start = this->root;
 			this->root->right = end;
 			end->parent = root;
 			return ft::make_pair(iterator(this->root), true);
@@ -335,49 +345,41 @@ namespace ft
 		// define insert
 		ft::pair<iterator, bool> insert(value_type const &value)
 		{
-
-			if (DEBUG)
-				std::cout << "inserting pair :[" << value.first << "]=" << value.second << " ==> ";
-			ft::pair<iterator, bool> result = make_pair(iterator(), false);
+			std::cout << "inserting pair :[" << value.first << "]=" << value.second << " ==> ";
 			if (this->root == end)
 			{
-				if (DEBUG)
-					std::cout << "root" << std::endl;
-				result = build_root(value);
-				return result;
+				std::cout << "root" << std::endl;
+				return build_root(value);
 			}
 			node_ptr current = this->root;
 			while (current != nullptr)
 			{
-
 				if (!comp(value.first, current->value.first) && !comp(current->value.first, value.first))
 				{
-					return ft::make_pair(iterator(current), false);
+					check return ft::make_pair(iterator(current), false);
 				}
 
 				else if (comp(value.first, current->value.first))
 				{
 					if (current->left == nullptr)
 					{
-						if (DEBUG)
-							std::cout << "left of " << current->value.first << std::endl;
-						result = insert_left(current, value);
+						std::cout << "left" << std::endl;
+						return (insert_left(current, value));
 					}
-					current = current->left;
+					current = current->right;
 				}
 				else
 				{
 
-					if (current->right == this->end || current->right == nullptr)
+					if (current->right == this->end)
 					{
-						if (DEBUG)
-							std::cout << "right of " << current->value.first << std::endl;
-						result = insert_right(current, value);
+						std::cout << "right" << std::endl;
+						return insert_right(current, value);
 					}
-					current = current->right;
+					current = current->left;
 				}
 			}
-			return result.second ? result : make_pair(iterator(current), false);
+			return ft::make_pair(iterator(current), false);
 		}
 
 		// define insert with hint
@@ -387,14 +389,12 @@ namespace ft
 			ft::pair<iterator, bool> result;
 			if (hint.current->left == nullptr && comp(hint.current->value.first, value.first))
 			{
-				if (DEBUG)
-					std::cout << "insert left" << std::endl;
+				std::cout << "insert left" << std::endl;
 				result = insert_left(hint.current, value);
 			}
 			else if (hint.current->right == nullptr && comp(value.first, hint.current->value.first))
 			{
-				if (DEBUG)
-					std::cout << "insert right" << std::endl;
+				std::cout << "insert right" << std::endl;
 				result = insert_right(hint.current, value);
 			}
 			else
@@ -404,16 +404,8 @@ namespace ft
 
 		void removeLeafNode(node_ptr node)
 		{
-			// if (node == start)
-			// 	start = (node->parent == nullptr) ? end : node->parent;
-			if (node->parent != nullptr)
-			{
-				if (node->isRightChild)
-					node->parent->right = nullptr;
-				else
-					node->parent->left = nullptr;
-			}
-
+			if (node == start)
+				start = (node->parent == nullptr) ? end : node->parent;
 			this->alloc.destroy(node);
 			this->alloc.deallocate(node, 1);
 			this->size--;
@@ -422,14 +414,14 @@ namespace ft
 		void removeNodeWithOneChild(node_ptr node)
 		{
 			node_ptr child = (node->hasOnlyOneChild(end)).first;
-
+			if (node == start)
+				start = (child == node->left) ? child : ((node->parent == nullptr) ? end : node->parent);
 			if (node->parent != nullptr)
 			{
 				if (node->isRightChild)
 					node->parent->right = child;
 				else
 					node->parent->left = child;
-				child->isRightChild = node->isRightChild;
 			}
 			else
 			{
@@ -442,7 +434,7 @@ namespace ft
 			this->size--;
 		}
 
-		void removeByPosition(iterator it)
+		void removeByPosition(iterator const &it)
 		{
 			node_ptr ptr = it.asPointer();
 			if (size == 0 || ptr == nullptr || ptr == end)
@@ -465,7 +457,7 @@ namespace ft
 			{
 				node_ptr successor = findMin(ptr->right);
 				node_ptr holder = alloc.allocate(1);
-				alloc.construct(holder, node(successor->value));
+				alloc.construct(holder, successor->value);
 				ptr->copyLinks(holder);
 				alloc.destroy(ptr);
 				alloc.deallocate(ptr, 1);
@@ -483,21 +475,39 @@ namespace ft
 			std::swap(this->alloc, other.alloc);
 		}
 
-		void clearTree(node_ptr node)
-		{
-			if (node == nullptr || node == end)
-				return;
-
-			clearTree(node->left);
-			clearTree(node->right);
-
-			alloc.destroy(node);
-			alloc.deallocate(node, 1);
-		}
-
 		void clear()
 		{
-			this->clearTree(this->root);
+			// node_ptr current = this->root == end ? nullptr : this->root;
+			// node_ptr parent = nullptr;
+			// while (current != nullptr)
+			// {
+			// 	if (current->left == nullptr)
+			// 	{
+			// 		if (parent != nullptr)
+			// 		{
+			// 			if (parent->left == current)
+			// 				parent->left = current->right;
+			// 			else
+			// 				parent->right = current->right;
+			// 		}
+			// 		else
+			// 			this->root = current->right;
+			// 		this->alloc.destroy(current);
+			// 		this->alloc.deallocate(current, 1);
+			// 		current = parent;
+			// 	}
+			// 	else
+			// 	{
+			// 		parent = current;
+			// 		current = current->left;
+			// 	}
+			// }
+			// this->size = 0;
+			iterator it = this->getStart();
+			while (it != this->getEnd())
+			{
+				removeByPosition(it++);
+			}
 		}
 
 		key_compare getComp() const
@@ -525,6 +535,7 @@ namespace ft
 		allocator_type alloc;
 		key_compare comp;
 		node_ptr root;
+		node_ptr start;
 		node_ptr end;
 		size_type size;
 
@@ -538,7 +549,7 @@ namespace ft
 		}
 
 		// define find min
-		node_ptr findMin(node_ptr curr_root) const
+		node_ptr findMin(node_ptr curr_root)
 		{
 			if (curr_root != nullptr && curr_root != end)
 			{
@@ -549,7 +560,7 @@ namespace ft
 		}
 
 		// define find max
-		node_ptr findMax(node_ptr curr_root) const
+		node_ptr findMax(node_ptr curr_root)
 		{
 			if (curr_root != nullptr && curr_root != end)
 			{
