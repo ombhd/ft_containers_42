@@ -6,7 +6,7 @@
 /*   By: obouykou <obouykou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/07 15:52:04 by obouykou          #+#    #+#             */
-/*   Updated: 2021/10/08 12:54:12 by obouykou         ###   ########.fr       */
+/*   Updated: 2021/10/10 10:53:31 by obouykou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ namespace ft
 
 		template <class InputIterator>
 		vector(InputIterator first, InputIterator last, const allocator_type &alloc = allocator_type(),
-				typename enable_if<!is_integral<InputIterator>::value, bool>::type = true) :_alloc(alloc),
+			   typename enable_if<!is_integral<InputIterator>::value, bool>::type = true) : _alloc(alloc),
 																							_arr(this->_alloc.allocate(1)),
 																							_capacity(1),
 																							_size(0)
@@ -410,26 +410,10 @@ namespace ft
 
 		void swap(vector &x)
 		{
-			// _alloc
-			allocator_type tmp_alloc = this->_alloc;
-			this->_alloc = x._alloc;
-			x._alloc = tmp_alloc;
-
-			size_type tmp;
-			// _size
-			tmp = x._size;
-			x._size = this->_size;
-			this->_size = tmp;
-
-			// capacity
-			tmp = x._capacity;
-			x._capacity = this->_capacity;
-			this->_capacity = tmp;
-
-			// _arr
-			pointer ptr = x._arr;
-			x._arr = this->_arr;
-			this->_arr = ptr;
+			std::swap(this->_arr, x._arr);
+			std::swap(this->_size, x._size);
+			std::swap(this->_capacity, x._capacity);
+			std::swap(this->_alloc, x._alloc);
 		}
 
 		void clear()
@@ -471,10 +455,7 @@ namespace ft
 	{
 		if (lhs.size() != rhs.size())
 			return (false);
-		for (size_t i = 0; i < lhs.size(); i++)
-			if (lhs[i] != rhs[i])
-				return (false);
-		return (true);
+		return ft::equal(lhs.begin(), lhs.end(), rhs.begin());
 	}
 
 	template <typename T, class Alloc>

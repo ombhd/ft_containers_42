@@ -6,7 +6,7 @@
 /*   By: obouykou <obouykou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 12:01:43 by obouykou          #+#    #+#             */
-/*   Updated: 2021/10/09 13:33:16 by obouykou         ###   ########.fr       */
+/*   Updated: 2021/10/10 10:44:36 by obouykou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ namespace ft
 		typedef typename Iter::difference_type difference_type;
 		typedef typename Iter::pointer pointer;
 		typedef typename Iter::reference reference;
-		
 	};
 
 	// define iterator traits for non-iterator types
@@ -428,6 +427,35 @@ namespace ft
 			++first2;
 		}
 		return (first2 != last2);
+	}
+
+	// define equal
+	template <class InputIterator1, class InputIterator2>
+	bool equal(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2)
+	{
+		while (first1 != last1)
+		{
+			if (!(*first1 == *first2))
+				return false;
+			++first1;
+			++first2;
+		}
+		return true;
+	}
+
+	// define equal (2)
+	template <class InputIterator1, class InputIterator2, class BinaryPredicate>
+	bool equal(InputIterator1 first1, InputIterator1 last1,
+			   InputIterator2 first2, BinaryPredicate pred)
+	{
+		while (first1 != last1)
+		{
+			if (!pred(*first1, *first2))
+				return false;
+			++first1;
+			++first2;
+		}
+		return true;
 	}
 
 	// define enable_if
