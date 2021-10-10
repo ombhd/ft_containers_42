@@ -6,9 +6,12 @@
 /*   By: obouykou <obouykou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/11 12:01:43 by obouykou          #+#    #+#             */
-/*   Updated: 2021/10/10 10:44:36 by obouykou         ###   ########.fr       */
+/*   Updated: 2021/10/10 21:55:25 by obouykou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#ifndef UTILS_HPP
+# define UTILS_HPP
 
 #include <iostream>
 namespace ft
@@ -234,9 +237,8 @@ namespace ft
 	}
 
 	// define reverse iterator
-	template <class Iterator, class Category = std::random_access_iterator_tag>
-	class reverse_iterator : public iterator<Category,
-											 typename iterator_traits<Iterator>::value_type>
+	template <class Iterator>
+	class reverse_iterator
 	{
 	public:
 		// typedefs
@@ -568,3 +570,5 @@ namespace ft
 	};
 
 }
+
+#endif // UTILS_HPP

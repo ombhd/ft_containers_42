@@ -6,7 +6,7 @@
 /*   By: obouykou <obouykou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/02 16:26:08 by obouykou          #+#    #+#             */
-/*   Updated: 2021/10/09 13:48:46 by obouykou         ###   ########.fr       */
+/*   Updated: 2021/10/10 21:45:20 by obouykou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,34 +56,29 @@ namespace ft
 		typedef typename allocator_type::const_pointer const_pointer;
 		typedef ptrdiff_t difference_type;
 		typedef size_t size_type;
-		typedef BinarySearchTree<value_type, value_compare, allocator_type> tree_type;
+		typedef BinarySearchTree<value_type, value_compare> tree_type;
 		typedef TreeIterator<value_type> iterator;
-		typedef TreeIterator<const value_type> const_iterator;
-		typedef ft::reverse_iterator<iterator, std::bidirectional_iterator_tag> reverse_iterator;
-		typedef ft::reverse_iterator<const_iterator, std::bidirectional_iterator_tag> const_reverse_iterator;
+		typedef ConstTreeIterator<value_type> const_iterator;
+		typedef ft::reverse_iterator<iterator> reverse_iterator;
+		typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
 		// define construtors
 
 		// empty (1)
-		explicit map(const key_compare &comp = key_compare(),
-					 const allocator_type &alloc = allocator_type()) : tree(comp, alloc)
-		{
-		}
+		explicit map(const key_compare &compr = key_compare(),
+					 const allocator_type &alloct = allocator_type()) : tree(compr), comp(compr), alloc(alloct) {}
 
 		// range (2)
 		template <class InputIterator>
 		map(InputIterator first, InputIterator last,
-			const key_compare &comp = key_compare(),
-			const allocator_type &alloc = allocator_type()) : tree(comp, alloc)
+			const key_compare &compr = key_compare(),
+			const allocator_type &alloct = allocator_type()) : tree(compr), comp(compr), alloc(alloct)
 		{
 			this->insert(first, last);
 		}
 
 		// copy (3)
-		map(const map &x)
-		{
-			*this = x;
-		}
+		map(const map &x) : tree(x.tree), comp(x.comp), alloc(x.alloc) {}
 
 		// operator=
 		map &operator=(const map &x)
@@ -93,6 +88,7 @@ namespace ft
 				this->clear();
 				this->insert(x.begin(), x.end());
 			}
+			return *this;
 		}
 
 		// Iterators:
@@ -104,7 +100,7 @@ namespace ft
 
 		const_iterator begin() const
 		{
-			return tree.getStart();
+			return const_iterator(tree.getStart());
 		}
 
 		iterator end()
@@ -114,7 +110,7 @@ namespace ft
 
 		const_iterator end() const
 		{
-			return tree.getEnd();
+			return const_iterator(tree.getEnd());
 		}
 
 		reverse_iterator rbegin()
@@ -149,17 +145,14 @@ namespace ft
 
 		size_type max_size() const
 		{
-			return tree.getAllocator().max_size();
+			return tree.max_size();
 		}
 
 		// Element access:
 
 		mapped_type &operator[](const key_type &k)
 		{
-			iterator it = this->find(k);
-			if (it == this->end())
-				it = this->insert(it, make_pair(k, mapped_type()));
-			return it->second;
+			return (this->insert(make_pair(k, mapped_type())).first)->second;
 		}
 
 		// Modifiers:
@@ -203,7 +196,7 @@ namespace ft
 		iterator erase(iterator first, iterator last)
 		{
 			while (first != last)
-				first = tree.removeByPosition(first);
+				tree.removeByPosition(first++);
 			return first;
 		}
 
@@ -221,7 +214,7 @@ namespace ft
 
 		key_compare key_comp() const
 		{
-			return tree.getComp();
+			return comp;
 		}
 
 		value_compare value_comp() const
@@ -289,22 +282,25 @@ namespace ft
 
 		pair<const_iterator, const_iterator> equal_range(const key_type &k) const
 		{
-			ft::make_pair(lower_bound(k), upper_bound(k));
+			return ft::make_pair(lower_bound(k), upper_bound(k));
 		}
+		
 		pair<iterator, iterator> equal_range(const key_type &k)
 		{
-			ft::make_pair(lower_bound(k), upper_bound(k));
+			return ft::make_pair(lower_bound(k), upper_bound(k));
 		}
 
 		// Allocator:
 		allocator_type get_allocator() const
 		{
-			return tree.getAllocator();
+			return this->alloc;
 		}
 
 	private:
 		// define data members
 		tree_type tree;
+		key_compare comp;
+		allocator_type alloc;
 	}; // map class
 
 } // namespace ft

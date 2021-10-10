@@ -6,7 +6,7 @@
 /*   By: obouykou <obouykou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 16:15:06 by obouykou          #+#    #+#             */
-/*   Updated: 2021/10/09 19:29:01 by obouykou         ###   ########.fr       */
+/*   Updated: 2021/10/10 21:38:40 by obouykou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ namespace ft
 				 node_ptr parent = nullptr,
 				 node_ptr left = nullptr,
 				 node_ptr right = nullptr,
-				 bool isRightChild = false)
+				 bool isRightChild = true)
 			: color(color),
 			  isRightChild(isRightChild),
 			  parent(parent),
@@ -128,7 +128,7 @@ namespace ft
 
 		bool isLeaf(node_ptr end) const
 		{
-			return (this->left == end && (this->right == end || this->right == nullptr));
+			return (this->left == nullptr && (this->right == end || this->right == nullptr));
 		}
 
 		ft::pair<node_ptr, bool> hasOnlyOneChild(node_ptr end) const
@@ -136,7 +136,7 @@ namespace ft
 			if (this->left == nullptr && (this->right != nullptr && this->right != end))
 				return ft::make_pair(this->right, true);
 			if (this->left != nullptr && (this->right == nullptr || this->right == end))
-				return ft::make_pair(this->left, false);
+				return ft::make_pair(this->left, true);
 			return ft::make_pair(nullptr, false);
 		}
 
@@ -151,7 +151,7 @@ namespace ft
 		typedef TreeNode<T> *node_ptr;
 		typedef T value_type;
 
-		TreeIterator(node_ptr pos = nullptr) : current(pos)
+		TreeIterator(node_ptr pos = nullptr) : current(pos), end(findEnd(current))
 		{
 		}
 
@@ -165,9 +165,11 @@ namespace ft
 			if (this != &other)
 			{
 				this->current = other.current;
+				this->end = other.end;
 			}
 			return *this;
 		}
+
 		~TreeIterator() {}
 
 		bool operator==(TreeIterator const &other) const
@@ -192,8 +194,11 @@ namespace ft
 
 		TreeIterator &operator++()
 		{
-			if (this->current == this->end)
+			if (this->current == end)
+			{
+				this->current = nullptr;
 				return *this;
+			}
 			if (this->current->right != nullptr)
 			{
 				this->current = this->current->right;
@@ -252,10 +257,40 @@ namespace ft
 
 	protected:
 		node_ptr current;
+		node_ptr end;
+
+		// define find end
+		node_ptr findEnd(node_ptr curr) const
+		{
+			if (curr == nullptr)
+				return nullptr;
+			while (curr->parent != nullptr)
+				curr = curr->parent;
+			while (curr->right != nullptr)
+				curr = curr->right;
+			return curr;
+		}
+	};
+
+	// TreeConstIterator : Binary Search Tree Const Iterator definition
+	template <typename T>
+	class ConstTreeIterator : public TreeIterator<T>
+	{
+	public:
+		typedef TreeNode<T> *node_ptr;
+		typedef T value_type;
+
+		ConstTreeIterator(node_ptr pos = nullptr) : TreeIterator<T>(pos) {}
+
+		ConstTreeIterator(ConstTreeIterator const &other) : TreeIterator<T>(other) {}
+
+		ConstTreeIterator(TreeIterator<value_type> const &other) : TreeIterator<value_type>(other) {}
+
+		~ConstTreeIterator() {}
 	};
 
 	// BinarySearchTree class definition
-	template <typename T, class Compare = std::less<typename T::first_type>, class Alloc = std::allocator<TreeNode<T> > >
+	template <typename T, class Compare = std::less<T>, class Alloc = std::allocator<TreeNode<T> > >
 	class BinarySearchTree
 	{
 	public:
@@ -265,10 +300,9 @@ namespace ft
 		typedef TreeNode<T> node;
 		typedef TreeNode<T> *node_ptr;
 		typedef size_t size_type;
-		// typedef Alloc allocator_type;
 		typedef Compare key_compare;
 		typedef TreeIterator<value_type> iterator;
-		typedef typename Alloc::template rebind<TreeNode<T> >::other allocator_type;
+		typedef Alloc allocator_type;
 
 		BinarySearchTree(const key_compare &comp = key_compare(),
 						 const allocator_type &alloc = allocator_type()) : alloc(alloc),
@@ -279,6 +313,21 @@ namespace ft
 		{
 			this->alloc.construct(root, node());
 		}
+
+		BinarySearchTree(const BinarySearchTree &other) : alloc(other.alloc),
+														  comp(other.comp),
+														  root(this->alloc.allocate(1)),
+														  end(root),
+														  size(0)
+		{
+			this->alloc.construct(root, node());
+			iterator ite = other.getEnd();
+			for (iterator it = other.getStart(); it != ite; ++it)
+			{
+				this->insert(it.asPointer()->value);
+			}
+		}
+
 		~BinarySearchTree()
 		{
 			clear();
@@ -288,22 +337,17 @@ namespace ft
 
 		iterator getStart() const
 		{
-			return iterator(findMin(this->root));
+			return findMin(this->root);
 		}
 
 		iterator getEnd() const
 		{
-			return iterator(end);
+			return end;
 		}
 
 		size_type const &getSize() const
 		{
 			return size;
-		}
-
-		allocator_type &getAllocator() const
-		{
-			return this->alloc;
 		}
 
 		// define insert_left
@@ -335,21 +379,17 @@ namespace ft
 		// define insert
 		ft::pair<iterator, bool> insert(value_type const &value)
 		{
-
 			if (DEBUG)
 				std::cout << "inserting pair :[" << value.first << "]=" << value.second << " ==> ";
-			ft::pair<iterator, bool> result = make_pair(iterator(), false);
 			if (this->root == end)
 			{
 				if (DEBUG)
 					std::cout << "root" << std::endl;
-				result = build_root(value);
-				return result;
+				return build_root(value);
 			}
 			node_ptr current = this->root;
 			while (current != nullptr)
 			{
-
 				if (!comp(value.first, current->value.first) && !comp(current->value.first, value.first))
 				{
 					return ft::make_pair(iterator(current), false);
@@ -361,41 +401,40 @@ namespace ft
 					{
 						if (DEBUG)
 							std::cout << "left of " << current->value.first << std::endl;
-						result = insert_left(current, value);
+						return insert_left(current, value);
 					}
 					current = current->left;
 				}
 				else
 				{
-
 					if (current->right == this->end || current->right == nullptr)
 					{
 						if (DEBUG)
 							std::cout << "right of " << current->value.first << std::endl;
-						result = insert_right(current, value);
+						return insert_right(current, value);
 					}
 					current = current->right;
 				}
 			}
-			return result.second ? result : make_pair(iterator(current), false);
+			return make_pair(iterator(current), false);
 		}
 
-		// define insert with hint
-		iterator insert(iterator hint, value_type const &value)
+		// define insert with hint position
+		iterator insert(iterator position, value_type const &value)
 		{
-
+			node_ptr hint = position.asPointer();
 			ft::pair<iterator, bool> result;
-			if (hint.current->left == nullptr && comp(hint.current->value.first, value.first))
+			if (hint->left == nullptr && comp(hint->value.first, value.first))
 			{
 				if (DEBUG)
 					std::cout << "insert left" << std::endl;
-				result = insert_left(hint.current, value);
+				result = insert_left(hint, value);
 			}
-			else if (hint.current->right == nullptr && comp(value.first, hint.current->value.first))
+			else if (hint->right == nullptr && comp(value.first, hint->value.first))
 			{
 				if (DEBUG)
 					std::cout << "insert right" << std::endl;
-				result = insert_right(hint.current, value);
+				result = insert_right(hint, value);
 			}
 			else
 				result = insert(value);
@@ -404,16 +443,23 @@ namespace ft
 
 		void removeLeafNode(node_ptr node)
 		{
-			// if (node == start)
-			// 	start = (node->parent == nullptr) ? end : node->parent;
 			if (node->parent != nullptr)
 			{
 				if (node->isRightChild)
-					node->parent->right = nullptr;
+				{
+					// case of leaf node has end as right child
+					node->parent->right = node->right;
+					if (node->right != nullptr)
+						node->right->parent = node->parent;
+				}
 				else
 					node->parent->left = nullptr;
 			}
-
+			if (node == this->root)
+			{
+				this->end->parent = nullptr;
+				this->root = this->end;
+			}
 			this->alloc.destroy(node);
 			this->alloc.deallocate(node, 1);
 			this->size--;
@@ -437,6 +483,8 @@ namespace ft
 				root = child;
 			}
 			child->parent = node->parent;
+			if (node == this->root)
+				this->root = child;
 			this->alloc.destroy(node);
 			this->alloc.deallocate(node, 1);
 			this->size--;
@@ -444,6 +492,8 @@ namespace ft
 
 		void removeByPosition(iterator it)
 		{
+			if (DEBUG)
+				std::cout << "remove element: [" << it->first << "] ==> " << it->second;
 			node_ptr ptr = it.asPointer();
 			if (size == 0 || ptr == nullptr || ptr == end)
 				return;
@@ -451,53 +501,66 @@ namespace ft
 			// case 1: leaf node
 			if (ptr->isLeaf(end))
 			{
+				if (DEBUG)
+					std::cout << " ||| leaf node" ;
 				removeLeafNode(ptr);
 			}
 
 			// case 2: node with one child
 			else if (ptr->hasOnlyOneChild(end).second)
 			{
+				if (DEBUG)
+					std::cout << " ||| node with one child" ;
 				removeNodeWithOneChild(ptr);
+				
 			}
 
 			// case 3: node with two children
 			else
 			{
+				if (DEBUG)
+					std::cout << " ||| node with two children";
+				
 				node_ptr successor = findMin(ptr->right);
+				if (successor == this->end)
+					successor = findMax(ptr->left);
+				if (DEBUG)
+					std::cout << "\nsuccessor: [" << successor->value.first << "]=" << successor->value.second << std::endl;
 				node_ptr holder = alloc.allocate(1);
 				alloc.construct(holder, node(successor->value));
 				ptr->copyLinks(holder);
+				if (ptr == this->root)
+					this->root = holder;
 				alloc.destroy(ptr);
 				alloc.deallocate(ptr, 1);
 				removeByPosition(iterator(successor));
 			}
+			if (DEBUG)
+				std::cout << " ||>>>>>>> removed" << std::endl;
 		}
 
 		void swap(BinarySearchTree &other)
 		{
 			std::swap(this->root, other.root);
-			std::swap(this->start, other.start);
 			std::swap(this->end, other.end);
 			std::swap(this->size, other.size);
 			std::swap(this->comp, other.comp);
 			std::swap(this->alloc, other.alloc);
 		}
 
-		void clearTree(node_ptr node)
-		{
-			if (node == nullptr || node == end)
-				return;
-
-			clearTree(node->left);
-			clearTree(node->right);
-
-			alloc.destroy(node);
-			alloc.deallocate(node, 1);
-		}
-
 		void clear()
 		{
+			if (size == 0)
+				return;
 			this->clearTree(this->root);
+			end->parent = nullptr;
+			this->root = end;
+			this->size = 0;
+		}
+
+		size_type max_size() const
+		{
+			return this->alloc.max_size();
 		}
 
 		key_compare getComp() const
@@ -557,6 +620,18 @@ namespace ft
 					curr_root = curr_root->right;
 			}
 			return curr_root;
+		}
+
+		void clearTree(node_ptr node)
+		{
+			if (node == nullptr || node == end)
+				return;
+
+			clearTree(node->left);
+			clearTree(node->right);
+
+			alloc.destroy(node);
+			alloc.deallocate(node, 1);
 		}
 	}; // class BinarySearchTree
 
