@@ -3,7 +3,7 @@
 To make sure you understand them, let’s re-implement them!
 
 ## Contributor
- - Omar BOUYKOURNE &nbsp;&nbsp;@ombhd &nbsp;	:   42login => `obouykou`
+ - Omar BOUYKOURNE &nbsp;&nbsp;@ombhd &nbsp;	:   42 username => `obouykou`
 
 ## Subject
 
