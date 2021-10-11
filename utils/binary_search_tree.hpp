@@ -6,7 +6,7 @@
 /*   By: obouykou <obouykou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 16:15:06 by obouykou          #+#    #+#             */
-/*   Updated: 2021/10/10 21:38:40 by obouykou         ###   ########.fr       */
+/*   Updated: 2021/10/11 15:23:18 by obouykou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,9 @@
 #define DEBUG false
 #endif // !DEBUG
 
-// TODO: to remove
+#if DEBUG
 #define check std::cout << "============ > checked < ===========" << std::endl;
+#endif // check
 
 namespace ft
 {

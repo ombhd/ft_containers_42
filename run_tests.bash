@@ -30,7 +30,7 @@ compile_and_run()
 tests="$1"
 
 if [ $# -ne 2 ] && [ $# -ne 1 ]; then
-	echo "Usage: [ ./run_tests.bash <tests_file.c> ]"
+	echo "Usage: [ ./run_tests.bash <tests_file.cpp> ]"
 	echo "Option: [ -r ~~ To Remove the objects and output files ]"
 	exit 1
 fi

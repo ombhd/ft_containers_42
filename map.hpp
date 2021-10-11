@@ -6,7 +6,7 @@
 /*   By: obouykou <obouykou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/02 16:26:08 by obouykou          #+#    #+#             */
-/*   Updated: 2021/10/10 21:45:20 by obouykou         ###   ########.fr       */
+/*   Updated: 2021/10/11 14:51:31 by obouykou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 #include <functional>
 
-#include "binary_search_tree.hpp"
+#include "utils/binary_search_tree.hpp"
 
 namespace ft
 {

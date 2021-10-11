@@ -6,7 +6,7 @@
 /*   By: obouykou <obouykou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/07 15:52:04 by obouykou          #+#    #+#             */
-/*   Updated: 2021/10/10 21:44:00 by obouykou         ###   ########.fr       */
+/*   Updated: 2021/10/11 14:53:19 by obouykou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 #include <stdexcept>
 #include <iostream>
 
-#include "utils.hpp"
+#include "utils/utils.hpp"
 
 namespace ft
 {
