@@ -6,7 +6,7 @@
 /*   By: obouykou <obouykou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/11 13:10:11 by obouykou          #+#    #+#             */
-/*   Updated: 2021/10/11 17:38:45 by obouykou         ###   ########.fr       */
+/*   Updated: 2021/10/12 17:53:25 by obouykou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,7 +148,6 @@ bool mycomparison(double first, double second)
 
 int main(void)
 {
-	// clock_t begin = clock();
 	// vector tests
 	std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< vector tests >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n"
 			  << std::endl;
