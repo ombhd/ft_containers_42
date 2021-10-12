@@ -6,7 +6,7 @@
 /*   By: obouykou <obouykou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 16:15:06 by obouykou          #+#    #+#             */
-/*   Updated: 2021/10/11 15:23:18 by obouykou         ###   ########.fr       */
+/*   Updated: 2021/10/12 17:55:08 by obouykou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,14 +24,6 @@
 #define RIGHT 'R'
 #define LEFT 'L'
 #define NONE 'N'
-
-#ifndef DEBUG
-#define DEBUG false
-#endif // !DEBUG
-
-#if DEBUG
-#define check std::cout << "============ > checked < ===========" << std::endl;
-#endif // check
 
 namespace ft
 {
@@ -291,7 +283,7 @@ namespace ft
 	};
 
 	// BinarySearchTree class definition
-	template <typename T, class Compare = std::less<T>, class Alloc = std::allocator<TreeNode<T> > >
+	template <typename T, class Compare = std::less<T>, class Alloc = std::allocator<TreeNode<T>>>
 	class BinarySearchTree
 	{
 	public:
@@ -380,12 +372,8 @@ namespace ft
 		// define insert
 		ft::pair<iterator, bool> insert(value_type const &value)
 		{
-			if (DEBUG)
-				std::cout << "inserting pair :[" << value.first << "]=" << value.second << " ==> ";
 			if (this->root == end)
 			{
-				if (DEBUG)
-					std::cout << "root" << std::endl;
 				return build_root(value);
 			}
 			node_ptr current = this->root;
@@ -400,8 +388,6 @@ namespace ft
 				{
 					if (current->left == nullptr)
 					{
-						if (DEBUG)
-							std::cout << "left of " << current->value.first << std::endl;
 						return insert_left(current, value);
 					}
 					current = current->left;
@@ -410,8 +396,6 @@ namespace ft
 				{
 					if (current->right == this->end || current->right == nullptr)
 					{
-						if (DEBUG)
-							std::cout << "right of " << current->value.first << std::endl;
 						return insert_right(current, value);
 					}
 					current = current->right;
@@ -427,14 +411,10 @@ namespace ft
 			ft::pair<iterator, bool> result;
 			if (hint->left == nullptr && comp(hint->value.first, value.first))
 			{
-				if (DEBUG)
-					std::cout << "insert left" << std::endl;
 				result = insert_left(hint, value);
 			}
 			else if (hint->right == nullptr && comp(value.first, hint->value.first))
 			{
-				if (DEBUG)
-					std::cout << "insert right" << std::endl;
 				result = insert_right(hint, value);
 			}
 			else
@@ -493,8 +473,6 @@ namespace ft
 
 		void removeByPosition(iterator it)
 		{
-			if (DEBUG)
-				std::cout << "remove element: [" << it->first << "] ==> " << it->second;
 			node_ptr ptr = it.asPointer();
 			if (size == 0 || ptr == nullptr || ptr == end)
 				return;
@@ -502,31 +480,21 @@ namespace ft
 			// case 1: leaf node
 			if (ptr->isLeaf(end))
 			{
-				if (DEBUG)
-					std::cout << " ||| leaf node" ;
 				removeLeafNode(ptr);
 			}
 
 			// case 2: node with one child
 			else if (ptr->hasOnlyOneChild(end).second)
 			{
-				if (DEBUG)
-					std::cout << " ||| node with one child" ;
 				removeNodeWithOneChild(ptr);
-				
 			}
 
 			// case 3: node with two children
 			else
 			{
-				if (DEBUG)
-					std::cout << " ||| node with two children";
-				
 				node_ptr successor = findMin(ptr->right);
 				if (successor == this->end)
 					successor = findMax(ptr->left);
-				if (DEBUG)
-					std::cout << "\nsuccessor: [" << successor->value.first << "]=" << successor->value.second << std::endl;
 				node_ptr holder = alloc.allocate(1);
 				alloc.construct(holder, node(successor->value));
 				ptr->copyLinks(holder);
@@ -536,8 +504,6 @@ namespace ft
 				alloc.deallocate(ptr, 1);
 				removeByPosition(iterator(successor));
 			}
-			if (DEBUG)
-				std::cout << " ||>>>>>>> removed" << std::endl;
 		}
 
 		void swap(BinarySearchTree &other)
