@@ -79,6 +79,9 @@ namespace ft
 
 		// copy (3)
 		map(const map &x) : tree(x.tree), comp(x.comp), alloc(x.alloc) {}
+		
+		//destructor
+		~map() {}
 
 		// operator=
 		map &operator=(const map &x)
