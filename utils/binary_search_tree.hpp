@@ -283,7 +283,7 @@ namespace ft
 	};
 
 	// BinarySearchTree class definition
-	template <typename T, class Compare = std::less<T>, class Alloc = std::allocator<TreeNode<T>>>
+	template <typename T, class Compare = std::less<T>, class Alloc = std::allocator<TreeNode<T> > >
 	class BinarySearchTree
 	{
 	public:
